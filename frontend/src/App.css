@@ -1,0 +1,939 @@
+/* ================================
+   GLOBAL STYLES
+================================ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  background: #f5f7fb;
+  color: #1f2937;
+  min-height: 100vh;
+}
+
+button,
+input,
+textarea {
+  font-family: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+
+/* ================================
+   APP CONTAINER
+================================ */
+
+.app {
+  min-height: 100vh;
+  background: #f5f7fb;
+}
+
+
+/* ================================
+   NAVBAR
+================================ */
+
+.navbar {
+  width: 100%;
+  height: 72px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 7%;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  font-size: 25px;
+  font-weight: 800;
+  color: #4f46e5;
+  letter-spacing: -0.5px;
+}
+
+.logo span {
+  color: #111827;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.nav-links a,
+.nav-links button {
+  border: none;
+  background: transparent;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #4b5563;
+  transition: 0.3s ease;
+}
+
+.nav-links a:hover,
+.nav-links button:hover {
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+.nav-login {
+  border: 1px solid #4f46e5 !important;
+  color: #4f46e5 !important;
+}
+
+.nav-login:hover {
+  background: #4f46e5 !important;
+  color: white !important;
+}
+
+
+/* ================================
+   HERO SECTION
+================================ */
+
+.hero {
+  min-height: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 70px 20px;
+  background: linear-gradient(
+    135deg,
+    #eef2ff 0%,
+    #f8faff 50%,
+    #e0e7ff 100%
+  );
+}
+
+.hero-content {
+  max-width: 850px;
+}
+
+.hero h1 {
+  font-size: 52px;
+  line-height: 1.1;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 20px;
+}
+
+.hero h1 span {
+  color: #4f46e5;
+}
+
+.hero p {
+  max-width: 650px;
+  margin: 0 auto 30px;
+  font-size: 18px;
+  line-height: 1.7;
+  color: #6b7280;
+}
+
+
+/* ================================
+   HERO BUTTONS
+================================ */
+
+.hero-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.primary-btn {
+  background: #4f46e5;
+  color: #ffffff;
+  border: none;
+  padding: 13px 28px;
+  border-radius: 9px;
+  font-size: 16px;
+  font-weight: 600;
+  transition: 0.3s ease;
+  box-shadow: 0 5px 15px rgba(79, 70, 229, 0.2);
+}
+
+.primary-btn:hover {
+  background: #4338ca;
+  transform: translateY(-2px);
+}
+
+.secondary-btn {
+  background: #ffffff;
+  color: #4f46e5;
+  border: 1px solid #c7d2fe;
+  padding: 13px 28px;
+  border-radius: 9px;
+  font-size: 16px;
+  font-weight: 600;
+  transition: 0.3s ease;
+}
+
+.secondary-btn:hover {
+  background: #eef2ff;
+  transform: translateY(-2px);
+}
+
+
+/* ================================
+   POLL SECTION
+================================ */
+
+.poll-section {
+  padding: 65px 20px;
+  background: #f5f7fb;
+}
+
+.poll-section-title {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.poll-section-title h2 {
+  font-size: 32px;
+  color: #111827;
+  margin-bottom: 10px;
+}
+
+.poll-section-title p {
+  color: #6b7280;
+  font-size: 16px;
+}
+
+
+/* ================================
+   POLL CONTAINER
+================================ */
+
+.poll-container {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+
+/* ================================
+   POLL CARD
+================================ */
+
+.poll-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 35px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.07);
+  border: 1px solid #e5e7eb;
+  transition: 0.3s ease;
+}
+
+.poll-card:hover {
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+}
+
+.poll-card h2 {
+  font-size: 25px;
+  line-height: 1.4;
+  color: #111827;
+  margin-bottom: 12px;
+}
+
+.poll-description {
+  color: #6b7280;
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 25px;
+}
+
+
+/* ================================
+   POLL OPTIONS
+================================ */
+
+.poll-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.poll-option {
+  position: relative;
+  width: 100%;
+  padding: 16px 18px;
+  background: #f9fafb;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  text-align: left;
+  color: #374151;
+  font-size: 15px;
+  font-weight: 500;
+  transition: 0.25s ease;
+}
+
+.poll-option:hover {
+  background: #eef2ff;
+  border-color: #818cf8;
+  color: #4338ca;
+}
+
+.poll-option.selected {
+  background: #eef2ff;
+  border-color: #4f46e5;
+  color: #4338ca;
+}
+
+.poll-option input {
+  margin-right: 12px;
+  accent-color: #4f46e5;
+}
+
+
+/* ================================
+   VOTE BUTTON
+================================ */
+
+.vote-btn {
+  width: 100%;
+  margin-top: 22px;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background: #4f46e5;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  transition: 0.3s ease;
+}
+
+.vote-btn:hover {
+  background: #4338ca;
+  transform: translateY(-1px);
+}
+
+.vote-btn:disabled {
+  background: #a5b4fc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+
+/* ================================
+   RESULTS
+================================ */
+
+.results {
+  margin-top: 25px;
+}
+
+.result-item {
+  margin-bottom: 20px;
+}
+
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 7px;
+}
+
+.result-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.result-percentage {
+  font-size: 14px;
+  font-weight: 700;
+  color: #4f46e5;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  background: #e5e7eb;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.progress {
+  height: 100%;
+  background: linear-gradient(90deg, #4f46e5, #818cf8);
+  border-radius: 20px;
+  transition: width 0.5s ease;
+}
+
+
+/* ================================
+   COMMENTS SECTION
+================================ */
+
+.comments-section {
+  margin-top: 30px;
+  padding-top: 25px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.comments-section h3 {
+  font-size: 20px;
+  color: #111827;
+  margin-bottom: 15px;
+}
+
+.comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.comment-form textarea {
+  width: 100%;
+  min-height: 110px;
+  resize: vertical;
+  padding: 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  outline: none;
+  font-size: 15px;
+  color: #374151;
+  transition: 0.3s ease;
+}
+
+.comment-form textarea:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.comment-btn {
+  align-self: flex-end;
+  padding: 11px 22px;
+  border: none;
+  border-radius: 8px;
+  background: #4f46e5;
+  color: white;
+  font-weight: 600;
+  transition: 0.3s ease;
+}
+
+.comment-btn:hover {
+  background: #4338ca;
+}
+
+
+/* ================================
+   COMMENT LIST
+================================ */
+
+.comment-list {
+  margin-top: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.comment {
+  background: #f9fafb;
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+}
+
+.comment-user {
+  font-size: 14px;
+  font-weight: 700;
+  color: #374151;
+  margin-bottom: 5px;
+}
+
+.comment-text {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #6b7280;
+}
+
+
+/* ================================
+   LOGIN / REGISTER
+================================ */
+
+.auth-page {
+  min-height: calc(100vh - 72px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  background: linear-gradient(
+    135deg,
+    #eef2ff,
+    #f8fafc
+  );
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  background: white;
+  padding: 35px;
+  border-radius: 18px;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb;
+}
+
+.auth-card h2 {
+  text-align: center;
+  font-size: 28px;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.auth-card p {
+  text-align: center;
+  color: #6b7280;
+  margin-bottom: 25px;
+}
+
+
+/* ================================
+   FORM
+================================ */
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 9px;
+  outline: none;
+  font-size: 15px;
+  transition: 0.3s ease;
+}
+
+.form-group input:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.auth-btn {
+  width: 100%;
+  padding: 13px;
+  background: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 9px;
+  font-size: 16px;
+  font-weight: 700;
+  transition: 0.3s ease;
+}
+
+.auth-btn:hover {
+  background: #4338ca;
+}
+
+.auth-link {
+  text-align: center;
+  margin-top: 18px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.auth-link a {
+  color: #4f46e5;
+  font-weight: 600;
+}
+
+.auth-link a:hover {
+  text-decoration: underline;
+}
+
+
+/* ================================
+   CREATE POLL
+================================ */
+
+.create-poll-page {
+  min-height: calc(100vh - 72px);
+  padding: 55px 20px;
+  background: #f5f7fb;
+}
+
+.create-poll-container {
+  max-width: 750px;
+  margin: auto;
+}
+
+.create-poll-card {
+  background: white;
+  padding: 35px;
+  border-radius: 18px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.07);
+}
+
+.create-poll-card h2 {
+  font-size: 28px;
+  color: #111827;
+  margin-bottom: 25px;
+}
+
+.option-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.option-row input {
+  flex: 1;
+  padding: 13px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  outline: none;
+}
+
+.option-row input:focus {
+  border-color: #4f46e5;
+}
+
+.remove-option {
+  padding: 0 15px;
+  border: none;
+  border-radius: 8px;
+  background: #fee2e2;
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.remove-option:hover {
+  background: #fecaca;
+}
+
+.add-option {
+  margin: 8px 0 20px;
+  padding: 10px 18px;
+  border: 1px dashed #818cf8;
+  border-radius: 8px;
+  background: #eef2ff;
+  color: #4f46e5;
+  font-weight: 600;
+}
+
+
+/* ================================
+   DASHBOARD
+================================ */
+
+.dashboard {
+  min-height: calc(100vh - 72px);
+  padding: 45px 7%;
+  background: #f5f7fb;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.dashboard-header h1 {
+  font-size: 32px;
+  color: #111827;
+}
+
+.dashboard-header p {
+  color: #6b7280;
+  margin-top: 5px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.dashboard-card {
+  background: white;
+  padding: 25px;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.dashboard-card h3 {
+  color: #6b7280;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.dashboard-card strong {
+  font-size: 30px;
+  color: #111827;
+}
+
+
+/* ================================
+   ALERT / ERROR / SUCCESS
+================================ */
+
+.error-message {
+  padding: 12px 15px;
+  margin-bottom: 18px;
+  border-radius: 8px;
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  font-size: 14px;
+}
+
+.success-message {
+  padding: 12px 15px;
+  margin-bottom: 18px;
+  border-radius: 8px;
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+  font-size: 14px;
+}
+
+
+/* ================================
+   LOADING
+================================ */
+
+.loading {
+  text-align: center;
+  padding: 50px;
+  color: #6b7280;
+  font-size: 16px;
+}
+
+
+/* ================================
+   FOOTER
+================================ */
+
+.footer {
+  background: #111827;
+  color: #d1d5db;
+  text-align: center;
+  padding: 25px 20px;
+  margin-top: 50px;
+}
+
+.footer p {
+  font-size: 14px;
+}
+
+
+/* ================================
+   MOBILE NAVIGATION
+================================ */
+
+.menu-btn {
+  display: none;
+  border: none;
+  background: transparent;
+  font-size: 25px;
+  color: #374151;
+}
+
+
+/* ================================
+   RESPONSIVE DESIGN
+================================ */
+
+@media (max-width: 900px) {
+  .navbar {
+    padding: 0 4%;
+  }
+
+  .hero h1 {
+    font-size: 42px;
+  }
+
+  .dashboard {
+    padding: 40px 4%;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+
+@media (max-width: 650px) {
+
+  /* Navbar */
+
+  .navbar {
+    height: 65px;
+  }
+
+  .logo {
+    font-size: 21px;
+  }
+
+  .nav-links {
+    gap: 5px;
+  }
+
+  .nav-links a,
+  .nav-links button {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+
+
+  /* Hero */
+
+  .hero {
+    min-height: 400px;
+    padding: 50px 20px;
+  }
+
+  .hero h1 {
+    font-size: 34px;
+  }
+
+  .hero p {
+    font-size: 15px;
+  }
+
+
+  /* Poll */
+
+  .poll-section {
+    padding: 45px 15px;
+  }
+
+  .poll-section-title h2 {
+    font-size: 27px;
+  }
+
+  .poll-card {
+    padding: 24px 18px;
+    border-radius: 14px;
+  }
+
+  .poll-card h2 {
+    font-size: 21px;
+  }
+
+
+  /* Auth */
+
+  .auth-page {
+    padding: 25px 15px;
+  }
+
+  .auth-card {
+    padding: 25px 20px;
+  }
+
+
+  /* Create Poll */
+
+  .create-poll-page {
+    padding: 35px 15px;
+  }
+
+  .create-poll-card {
+    padding: 25px 18px;
+  }
+
+  .option-row {
+    flex-direction: column;
+  }
+
+  .remove-option {
+    padding: 10px;
+  }
+
+
+  /* Dashboard */
+
+  .dashboard {
+    padding: 30px 15px;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .dashboard-header h1 {
+    font-size: 27px;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+
+  /* Buttons */
+
+  .hero-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .primary-btn,
+  .secondary-btn {
+    width: 100%;
+    max-width: 280px;
+  }
+}
+
+
+/* ================================
+   SMALL MOBILE
+================================ */
+
+@media (max-width: 400px) {
+
+  .hero h1 {
+    font-size: 29px;
+  }
+
+  .poll-card {
+    padding: 20px 15px;
+  }
+
+  .auth-card {
+    padding: 22px 15px;
+  }
+
+  .nav-links a,
+  .nav-links button {
+    padding: 7px 8px;
+    font-size: 12px;
+  }
+}
