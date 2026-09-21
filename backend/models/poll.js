@@ -1,8 +1,10 @@
 const mongoose = require("mongoose");
 
-// =================================
-// POLL OPTION
-// =================================
+/*
+=========================================
+OPTION SCHEMA
+=========================================
+*/
 
 const optionSchema = new mongoose.Schema({
   text: {
@@ -17,9 +19,11 @@ const optionSchema = new mongoose.Schema({
   },
 });
 
-// =================================
-// COMMENT
-// =================================
+/*
+=========================================
+COMMENT SCHEMA
+=========================================
+*/
 
 const commentSchema = new mongoose.Schema(
   {
@@ -42,9 +46,11 @@ const commentSchema = new mongoose.Schema(
   }
 );
 
-// =================================
-// POLL
-// =================================
+/*
+=========================================
+POLL SCHEMA
+=========================================
+*/
 
 const pollSchema = new mongoose.Schema(
   {
@@ -75,16 +81,25 @@ const pollSchema = new mongoose.Schema(
       },
     },
 
-    // Anonymous/browser voters
+    /*
+    Anonymous browser IDs
+    used to prevent the same
+    browser from voting again.
+    */
+
     anonymousVoters: [
       {
         type: String,
       },
     ],
 
-    // Comments
+    /*
+    Public opinions/comments
+    */
+
     comments: {
       type: [commentSchema],
+
       default: [],
     },
   },

@@ -1,12 +1,41 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import {
+  useNavigate,
+  useParams,
+} from "react-router-dom";
+import { io } from "socket.io-client";
+
+
+// =========================================
+// API URL
+// =========================================
+
+const API_URL =
+  import.meta.env.VITE_API_URL ||
+  "http://localhost:5000/api";
+
+
+// =========================================
+// SOCKET URL
+// IMPORTANT: /api nahi lagana
+// =========================================
+
+const SOCKET_URL =
+  "http://localhost:5000";
+
 
 function PollResults() {
   const { pollId } = useParams();
 
   const navigate = useNavigate();
 
-  const [poll, setPoll] = useState(null);
+
+  // =========================================
+  // STATES
+  // =========================================
+
+  const [poll, setPoll] =
+    useState(null);
 
   const [selectedOption, setSelectedOption] =
     useState("");
@@ -32,9 +61,10 @@ function PollResults() {
   const [success, setSuccess] =
     useState("");
 
-  // =================================
+
+  // =========================================
   // CREATE ANONYMOUS ID
-  // =================================
+  // =========================================
 
   const getAnonymousId = () => {
     let anonymousId =
@@ -55,14 +85,18 @@ function PollResults() {
     return anonymousId;
   };
 
-  // =================================
-  // GET POLL
-  // =================================
+
+  // =========================================
+  // FETCH POLL FROM MONGODB
+  // =========================================
 
   const fetchPoll = async () => {
     try {
+      setLoading(true);
+      setError("");
+
       const response = await fetch(
-        `http://localhost:5000/api/polls/${pollId}`
+        `${API_URL}/polls/${pollId}`
       );
 
       const data =
@@ -78,27 +112,115 @@ function PollResults() {
       }
 
       setPoll(data.poll);
+
     } catch (error) {
-      console.error(error);
+      console.error(
+        "FETCH POLL ERROR:",
+        error
+      );
 
       setError(
         "Unable to connect to server."
       );
+
     } finally {
       setLoading(false);
     }
   };
 
+
+  // =========================================
+  // INITIAL POLL LOAD
+  // =========================================
+
   useEffect(() => {
     fetchPoll();
   }, [pollId]);
 
-  // =================================
+
+  // =========================================
+  // SOCKET.IO LIVE CONNECTION
+  // =========================================
+
+  useEffect(() => {
+
+    console.log(
+      "Connecting to Socket.IO..."
+    );
+
+    const socket =
+      io(SOCKET_URL);
+
+
+    // ---------------------------------------
+    // SOCKET CONNECTED
+    // ---------------------------------------
+
+    socket.on("connect", () => {
+      console.log(
+        "Socket connected:",
+        socket.id
+      );
+    });
+
+
+    // ---------------------------------------
+    // LIVE POLL UPDATE
+    // ---------------------------------------
+
+    socket.on(
+      "pollUpdated",
+      (updatedPoll) => {
+
+        console.log(
+          "LIVE POLL UPDATE:",
+          updatedPoll
+        );
+
+
+        /*
+        Only update this poll
+        */
+
+        if (
+          updatedPoll._id === pollId
+        ) {
+          setPoll(updatedPoll);
+        }
+      }
+    );
+
+
+    // ---------------------------------------
+    // SOCKET DISCONNECTED
+    // ---------------------------------------
+
+    socket.on("disconnect", () => {
+      console.log(
+        "Socket disconnected"
+      );
+    });
+
+
+    // ---------------------------------------
+    // CLEANUP
+    // ---------------------------------------
+
+    return () => {
+      socket.disconnect();
+    };
+
+  }, [pollId]);
+
+
+  // =========================================
   // VOTE
-  // =================================
+  // =========================================
 
   const handleVote = async () => {
+
     if (!selectedOption) {
+
       setError(
         "Please select an option first."
       );
@@ -106,39 +228,65 @@ function PollResults() {
       return;
     }
 
-    setSubmittingVote(true);
-
-    setError("");
-
-    setSuccess("");
 
     try {
+
+      setSubmittingVote(true);
+
+      setError("");
+
+      setSuccess("");
+
+
+      // Get browser ID
+
       const anonymousId =
         getAnonymousId();
 
-      const response = await fetch(
-        `http://localhost:5000/api/polls/${pollId}/vote`,
-        {
-          method: "POST",
 
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-
-          body: JSON.stringify({
-            optionId:
-              selectedOption,
-
-            anonymousId,
-          }),
-        }
+      console.log(
+        "Submitting vote..."
       );
+
+
+      const response =
+        await fetch(
+          `${API_URL}/polls/${pollId}/vote`,
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+
+            body: JSON.stringify({
+              optionId:
+                selectedOption,
+
+              anonymousId:
+                anonymousId,
+            }),
+          }
+        );
+
 
       const data =
         await response.json();
 
+
+      console.log(
+        "VOTE RESPONSE:",
+        data
+      );
+
+
+      // -------------------------------------
+      // ERROR
+      // -------------------------------------
+
       if (!response.ok) {
+
         setError(
           data.message ||
             "Unable to submit vote."
@@ -147,30 +295,59 @@ function PollResults() {
         return;
       }
 
+
+      // -------------------------------------
+      // UPDATE CURRENT SCREEN
+      // -------------------------------------
+
       setPoll(data.poll);
+
+
+      // Remove selection
+
+      setSelectedOption("");
+
+
+      // Success
 
       setSuccess(
         "Your vote has been recorded successfully!"
       );
+
+
     } catch (error) {
-      console.error(error);
+
+      console.error(
+        "VOTE ERROR:",
+        error
+      );
 
       setError(
         "Unable to connect to server."
       );
+
     } finally {
+
       setSubmittingVote(false);
     }
   };
 
-  // =================================
-  // COMMENT
-  // =================================
+
+  // =========================================
+  // ADD COMMENT / OPINION
+  // =========================================
 
   const handleComment = async (e) => {
+
     e.preventDefault();
 
+
+    // ---------------------------------------
+    // NAME VALIDATION
+    // ---------------------------------------
+
     if (!name.trim()) {
+
       setError(
         "Please enter your name."
       );
@@ -178,7 +355,13 @@ function PollResults() {
       return;
     }
 
+
+    // ---------------------------------------
+    // COMMENT VALIDATION
+    // ---------------------------------------
+
     if (!comment.trim()) {
+
       setError(
         "Please write your opinion."
       );
@@ -186,34 +369,59 @@ function PollResults() {
       return;
     }
 
-    setSubmittingComment(true);
-
-    setError("");
-
-    setSuccess("");
 
     try {
-      const response = await fetch(
-        `http://localhost:5000/api/polls/${pollId}/comments`,
-        {
-          method: "POST",
 
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
+      setSubmittingComment(true);
 
-          body: JSON.stringify({
-            name: name.trim(),
-            text: comment.trim(),
-          }),
-        }
+      setError("");
+
+      setSuccess("");
+
+
+      console.log(
+        "Submitting opinion..."
       );
+
+
+      const response =
+        await fetch(
+          `${API_URL}/polls/${pollId}/comments`,
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+
+            body: JSON.stringify({
+              name:
+                name.trim(),
+
+              text:
+                comment.trim(),
+            }),
+          }
+        );
+
 
       const data =
         await response.json();
 
+
+      console.log(
+        "COMMENT RESPONSE:",
+        data
+      );
+
+
+      // ---------------------------------------
+      // ERROR
+      // ---------------------------------------
+
       if (!response.ok) {
+
         setError(
           data.message ||
             "Unable to post opinion."
@@ -222,60 +430,104 @@ function PollResults() {
         return;
       }
 
+
+      // ---------------------------------------
+      // UPDATE CURRENT SCREEN
+      // ---------------------------------------
+
       setPoll(data.poll);
+
+
+      // Clear form
 
       setName("");
 
       setComment("");
 
+
+      // Success
+
       setSuccess(
         "Your opinion has been posted."
       );
+
+
     } catch (error) {
-      console.error(error);
+
+      console.error(
+        "COMMENT ERROR:",
+        error
+      );
 
       setError(
         "Unable to connect to server."
       );
+
     } finally {
+
       setSubmittingComment(false);
     }
   };
 
-  // =================================
-  // LOADING
-  // =================================
+
+  // =========================================
+  // LOADING SCREEN
+  // =========================================
 
   if (loading) {
+
     return (
       <div className="poll-result-loading">
-        Loading poll...
+
+        <div className="loading-spinner">
+          ⟳
+        </div>
+
+        <p>
+          Loading poll...
+        </p>
+
       </div>
     );
   }
 
-  // =================================
+
+  // =========================================
   // POLL NOT FOUND
-  // =================================
+  // =========================================
 
   if (!poll) {
+
     return (
       <div className="poll-result-loading">
-        <h2>Poll not found</h2>
+
+        <h2>
+          Poll not found
+        </h2>
+
+        {error && (
+          <p className="poll-error">
+            {error}
+          </p>
+        )}
 
         <button
-          onClick={() => navigate("/")}
+          onClick={() =>
+            navigate("/")
+          }
           className="back-home-button"
         >
           Back Home
         </button>
+
       </div>
     );
   }
 
-  // =================================
+
+  // =========================================
   // TOTAL VOTES
-  // =================================
+  // =========================================
 
   const totalVotes =
     poll.options.reduce(
@@ -284,32 +536,53 @@ function PollResults() {
       0
     );
 
+
+  // =========================================
+  // UI
+  // =========================================
+
   return (
     <div className="poll-result-page">
 
       <div className="poll-result-container">
 
-        {/* BACK */}
+
+        {/* =================================
+            BACK BUTTON
+        ================================= */}
 
         <button
-          onClick={() => navigate("/")}
+          onClick={() =>
+            navigate("/")
+          }
           className="back-poll-button"
         >
           ← Back to Polls
         </button>
 
 
-        {/* POLL */}
+        {/* =================================
+            POLL CARD
+        ================================= */}
 
         <div className="poll-detail-card">
+
+
+          {/* PUBLIC BADGE */}
 
           <div className="poll-detail-badge">
             ● PUBLIC POLL
           </div>
 
+
+          {/* QUESTION */}
+
           <h1>
             {poll.question}
           </h1>
+
+
+          {/* DESCRIPTION */}
 
           {poll.description && (
             <p className="poll-description">
@@ -317,16 +590,24 @@ function PollResults() {
             </p>
           )}
 
+
+          {/* PUBLIC NOTICE */}
+
           <div className="public-vote-notice">
             ✓ No account required to vote
           </div>
+
+
+          {/* TOTAL VOTES */}
 
           <div className="poll-total-votes">
             {totalVotes} total votes
           </div>
 
 
-          {/* OPTIONS */}
+          {/* =================================
+              OPTIONS
+          ================================= */}
 
           <div className="poll-voting-options">
 
@@ -342,21 +623,26 @@ function PollResults() {
                       )
                     : 0;
 
+
                 return (
                   <button
                     key={option._id}
+
                     className={`poll-voting-option ${
                       selectedOption ===
                       option._id
                         ? "selected"
                         : ""
                     }`}
+
                     onClick={() =>
                       setSelectedOption(
                         option._id
                       )
                     }
                   >
+
+                    {/* OPTION TEXT */}
 
                     <div className="option-text-row">
 
@@ -370,20 +656,30 @@ function PollResults() {
 
                     </div>
 
+
+                    {/* PROGRESS BAR */}
+
                     <div className="result-progress">
 
                       <div
                         className="result-progress-fill"
+
                         style={{
                           width:
                             `${percentage}%`,
                         }}
-                      ></div>
+                      />
 
                     </div>
 
+
+                    {/* VOTE COUNT */}
+
                     <small>
-                      {option.votes} votes
+                      {option.votes}{" "}
+                      {option.votes === 1
+                        ? "vote"
+                        : "votes"}
                     </small>
 
                   </button>
@@ -394,22 +690,37 @@ function PollResults() {
           </div>
 
 
+          {/* =================================
+              SUBMIT VOTE
+          ================================= */}
+
           <button
             className="submit-vote-button"
+
             onClick={handleVote}
-            disabled={submittingVote}
+
+            disabled={
+              submittingVote
+            }
           >
+
             {submittingVote
               ? "Submitting..."
               : "Submit My Vote"}
+
           </button>
 
+
+          {/* ERROR */}
 
           {error && (
             <div className="poll-error">
               {error}
             </div>
           )}
+
+
+          {/* SUCCESS */}
 
           {success && (
             <div className="poll-success">
@@ -420,9 +731,14 @@ function PollResults() {
         </div>
 
 
-        {/* COMMENTS */}
+        {/* =================================
+            COMMENTS / OPINIONS
+        ================================= */}
 
         <div className="comments-card">
+
+
+          {/* COMMENTS HEADER */}
 
           <div className="comments-header">
 
@@ -438,13 +754,20 @@ function PollResults() {
 
             </div>
 
+
+            {/* COMMENT COUNT */}
+
             <div className="comment-count">
+
               {poll.comments?.length ||
                 0}
+
             </div>
 
           </div>
 
+
+          {/* DESCRIPTION */}
 
           <p className="comments-description">
             No account is required. Enter
@@ -453,24 +776,40 @@ function PollResults() {
           </p>
 
 
+          {/* =================================
+              COMMENT FORM
+          ================================= */}
+
           <form
-            onSubmit={handleComment}
+            onSubmit={
+              handleComment
+            }
             className="comment-form"
           >
+
 
             {/* NAME */}
 
             <input
               type="text"
+
               className="comment-name-input"
+
               value={name}
+
               onChange={(e) =>
                 setName(
                   e.target.value
                 )
               }
+
               placeholder="Your name"
+
               maxLength={50}
+
+              disabled={
+                submittingComment
+              }
             />
 
 
@@ -478,15 +817,24 @@ function PollResults() {
 
             <textarea
               value={comment}
+
               onChange={(e) =>
                 setComment(
                   e.target.value
                 )
               }
+
               placeholder="Write your opinion about the Petroleum Development Levy..."
+
               maxLength={500}
+
+              disabled={
+                submittingComment
+              }
             />
 
+
+            {/* FORM BOTTOM */}
 
             <div className="comment-form-bottom">
 
@@ -494,15 +842,19 @@ function PollResults() {
                 {comment.length}/500
               </span>
 
+
               <button
                 type="submit"
+
                 disabled={
                   submittingComment
                 }
               >
+
                 {submittingComment
                   ? "Posting..."
                   : "Post Opinion"}
+
               </button>
 
             </div>
@@ -510,7 +862,9 @@ function PollResults() {
           </form>
 
 
-          {/* COMMENTS */}
+          {/* =================================
+              COMMENTS LIST
+          ================================= */}
 
           <div className="comments-list">
 
@@ -527,6 +881,8 @@ function PollResults() {
                     key={item._id}
                   >
 
+                    {/* AVATAR */}
+
                     <div className="comment-avatar">
 
                       {item.name
@@ -537,6 +893,8 @@ function PollResults() {
                     </div>
 
 
+                    {/* CONTENT */}
+
                     <div className="comment-content">
 
                       <div className="comment-user">
@@ -544,13 +902,19 @@ function PollResults() {
                         {item.name ||
                           "Anonymous"}
 
-                        <span>
-                          {new Date(
-                            item.createdAt
-                          ).toLocaleDateString()}
-                        </span>
+
+                        {/* DATE */}
+
+                        {item.createdAt && (
+                          <span>
+                            {new Date(
+                              item.createdAt
+                            ).toLocaleDateString()}
+                          </span>
+                        )}
 
                       </div>
+
 
                       <p>
                         {item.text}
@@ -592,5 +956,6 @@ function PollResults() {
     </div>
   );
 }
+
 
 export default PollResults;

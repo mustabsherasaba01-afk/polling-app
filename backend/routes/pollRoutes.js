@@ -12,21 +12,24 @@ const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-// =================================
-// PUBLIC ROUTES
-// =================================
+/*
+=========================================
+PUBLIC
+=========================================
+*/
 
-// Get all polls
 router.get("/", getPolls);
 
-// Get single poll
-router.get("/:pollId", getPollById);
+router.get(
+  "/:pollId",
+  getPollById
+);
 
-// =================================
-// PROTECTED ROUTE
-// =================================
-
-// Only logged-in users can CREATE polls
+/*
+=========================================
+PROTECTED
+=========================================
+*/
 
 router.post(
   "/",
@@ -34,18 +37,22 @@ router.post(
   createPoll
 );
 
-// =================================
-// PUBLIC VOTE
-// =================================
+/*
+=========================================
+PUBLIC VOTE
+=========================================
+*/
 
 router.post(
   "/:pollId/vote",
   voteOnPoll
 );
 
-// =================================
-// PUBLIC COMMENT
-// =================================
+/*
+=========================================
+PUBLIC COMMENT
+=========================================
+*/
 
 router.post(
   "/:pollId/comments",

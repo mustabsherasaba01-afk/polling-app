@@ -1,8 +1,10 @@
-const Poll = require("../models/poll");
+const Poll = require("../models/Poll");
 
-// =================================
-// CREATE POLL
-// =================================
+/*
+=========================================
+CREATE POLL
+=========================================
+*/
 
 const createPoll = async (req, res) => {
   try {
@@ -20,7 +22,8 @@ const createPoll = async (req, res) => {
 
     if (!options || !Array.isArray(options)) {
       return res.status(400).json({
-        message: "Options must be an array",
+        message:
+          "Options must be an array",
       });
     }
 
@@ -62,6 +65,18 @@ const createPoll = async (req, res) => {
       comments: [],
     });
 
+    /*
+    =====================================
+    LIVE UPDATE
+    =====================================
+    */
+
+    const io = req.app.get("io");
+
+    if (io) {
+      io.emit("pollCreated", poll);
+    }
+
     res.status(201).json({
       message:
         "Poll created successfully",
@@ -80,9 +95,11 @@ const createPoll = async (req, res) => {
   }
 };
 
-// =================================
-// GET ALL POLLS
-// =================================
+/*
+=========================================
+GET ALL POLLS
+=========================================
+*/
 
 const getPolls = async (req, res) => {
   try {
@@ -92,6 +109,7 @@ const getPolls = async (req, res) => {
 
     res.status(200).json({
       count: polls.length,
+
       polls,
     });
   } catch (error) {
@@ -106,9 +124,11 @@ const getPolls = async (req, res) => {
   }
 };
 
-// =================================
-// GET SINGLE POLL
-// =================================
+/*
+=========================================
+GET SINGLE POLL
+=========================================
+*/
 
 const getPollById = async (req, res) => {
   try {
@@ -139,9 +159,11 @@ const getPollById = async (req, res) => {
   }
 };
 
-// =================================
-// PUBLIC ANONYMOUS VOTE
-// =================================
+/*
+=========================================
+PUBLIC VOTE
+=========================================
+*/
 
 const voteOnPoll = async (req, res) => {
   try {
@@ -152,7 +174,9 @@ const voteOnPoll = async (req, res) => {
       anonymousId,
     } = req.body;
 
-    // Check anonymous ID
+    /*
+    Validate anonymous ID
+    */
 
     if (!anonymousId) {
       return res.status(400).json({
@@ -161,7 +185,9 @@ const voteOnPoll = async (req, res) => {
       });
     }
 
-    // Check option
+    /*
+    Validate option
+    */
 
     if (!optionId) {
       return res.status(400).json({
@@ -170,7 +196,9 @@ const voteOnPoll = async (req, res) => {
       });
     }
 
-    // Find poll
+    /*
+    Find poll
+    */
 
     const poll = await Poll.findById(
       pollId
@@ -182,7 +210,9 @@ const voteOnPoll = async (req, res) => {
       });
     }
 
-    // Check duplicate vote
+    /*
+    Check duplicate vote
+    */
 
     const alreadyVoted =
       poll.anonymousVoters.includes(
@@ -196,7 +226,9 @@ const voteOnPoll = async (req, res) => {
       });
     }
 
-    // Find selected option
+    /*
+    Find selected option
+    */
 
     const selectedOption =
       poll.options.id(optionId);
@@ -208,17 +240,42 @@ const voteOnPoll = async (req, res) => {
       });
     }
 
-    // Add vote
+    /*
+    Increase vote
+    */
 
     selectedOption.votes += 1;
 
-    // Store anonymous voter
+    /*
+    Save anonymous voter
+    */
 
     poll.anonymousVoters.push(
       anonymousId
     );
 
+    /*
+    SAVE TO MONGODB
+    */
+
     await poll.save();
+
+    /*
+    =====================================
+    SEND UPDATED POLL TO ALL USERS
+    =====================================
+    */
+
+    const io = req.app.get("io");
+
+    if (io) {
+      io.emit("pollUpdated", poll);
+    }
+
+    /*
+    Send updated poll
+    back to the voter
+    */
 
     res.status(200).json({
       message:
@@ -238,9 +295,11 @@ const voteOnPoll = async (req, res) => {
   }
 };
 
-// =================================
-// PUBLIC COMMENT
-// =================================
+/*
+=========================================
+PUBLIC COMMENT
+=========================================
+*/
 
 const addComment = async (req, res) => {
   try {
@@ -251,7 +310,9 @@ const addComment = async (req, res) => {
 
     const { pollId } = req.params;
 
-    // Validate name
+    /*
+    Validate name
+    */
 
     if (!name || name.trim() === "") {
       return res.status(400).json({
@@ -260,7 +321,9 @@ const addComment = async (req, res) => {
       });
     }
 
-    // Validate comment
+    /*
+    Validate opinion
+    */
 
     if (!text || text.trim() === "") {
       return res.status(400).json({
@@ -269,6 +332,10 @@ const addComment = async (req, res) => {
       });
     }
 
+    /*
+    Maximum length
+    */
+
     if (text.trim().length > 500) {
       return res.status(400).json({
         message:
@@ -276,7 +343,9 @@ const addComment = async (req, res) => {
       });
     }
 
-    // Find poll
+    /*
+    Find poll
+    */
 
     const poll = await Poll.findById(
       pollId
@@ -288,14 +357,37 @@ const addComment = async (req, res) => {
       });
     }
 
-    // Add comment
+    /*
+    Add comment
+    */
 
     poll.comments.push({
       name: name.trim(),
+
       text: text.trim(),
     });
 
+    /*
+    SAVE TO MONGODB
+    */
+
     await poll.save();
+
+    /*
+    =====================================
+    SEND UPDATED POLL TO ALL USERS
+    =====================================
+    */
+
+    const io = req.app.get("io");
+
+    if (io) {
+      io.emit("pollUpdated", poll);
+    }
+
+    /*
+    Return updated poll
+    */
 
     res.status(201).json({
       message:
@@ -314,10 +406,6 @@ const addComment = async (req, res) => {
     });
   }
 };
-
-// =================================
-// EXPORT
-// =================================
 
 module.exports = {
   createPoll,
